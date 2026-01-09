@@ -9,6 +9,56 @@
   --brand-3-rgb: 255,248,10;
   --glass-bg: rgba(255,255,255,0.85);
 }
+
+html.dark {
+  --nav-900: #e2e8f0; /* slate-200 */
+  --glass-bg: rgba(15, 23, 42, 0.85); /* slate-900 */
+  --nav-900-rgb: 226, 232, 240;
+}
+
+html.dark body {
+    background-color: #0f172a; /* slate-900 */
+    color: #f8fafc; /* slate-50 */
+}
+
+html.dark .glass {
+    background: var(--glass-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar specific dark mode fixes */
+html.dark #sidebar {
+    box-shadow: 10px 0 30px -10px rgba(0, 0, 0, 0.5); /* Replace light shadow with dark */
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html.dark .sidebar-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+}
+
+html.dark .text-slate-900 { color: #f8fafc; }
+html.dark .text-slate-800 { color: #f1f5f9; }
+html.dark .text-slate-700 { color: #e2e8f0; }
+html.dark .text-slate-600 { color: #cbd5e1; }
+html.dark .text-slate-500 { color: #94a3b8; }
+html.dark .text-gray-900 { color: #f8fafc; }
+html.dark .text-gray-800 { color: #f1f5f9; }
+html.dark .text-gray-700 { color: #e2e8f0; }
+html.dark .text-gray-600 { color: #cbd5e1; }
+html.dark .text-gray-500 { color: #94a3b8; }
+html.dark .text-gray-400 { color: #cbd5e1; } /* gray-400 mapping */
+html.dark .text-slate-400 { color: #cbd5e1; } /* slate-400 mapping */
+html.dark .bg-white { background-color: #1e293b; /* slate-800 */ }
+html.dark .bg-gray-50 { background-color: #0f172a; /* slate-900 */ }
+html.dark .border-gray-200, html.dark .border-gray-100, html.dark .border-white\/60 { border-color: rgba(255,255,255,0.1); }
+html.dark .bg-white\/60 { background-color: rgba(30, 41, 59, 0.6); }
+html.dark .bg-white\/40 { background-color: rgba(30, 41, 59, 0.4); }
+html.dark .border-white\/50 { border-color: rgba(255, 255, 255, 0.1); }
+
+
+html.dark .bg-gray-50\/50 { background-color: rgba(15, 23, 42, 0.5); }
+
 body { font-family: "Outfit", sans-serif; color: rgba(17,24,39,0.95); }
 .glass {
   background: var(--glass-bg);
@@ -28,6 +78,7 @@ body { font-family: "Outfit", sans-serif; color: rgba(17,24,39,0.95); }
 .bg-cta-gradient{ background: linear-gradient(135deg, rgba(var(--nav-900-rgb),1) 0%, rgba(var(--brand-1-rgb),1) 55%, rgba(var(--brand-2-rgb),1) 100%); }
 .btn-primary{ background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); color: white; box-shadow: 0 10px 30px rgba(var(--brand-1-rgb),0.12); }
 .btn-outline{ background: white; color: #0f172a; border: 1px solid rgba(var(--nav-900-rgb),0.08); }
+html.dark .btn-outline { background: transparent; color: white; border-color: rgba(255,255,255,0.2); }
 .accent-pill{ background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); color: white; }
 .bg-footer{ background: linear-gradient(180deg, #0f172a 0%, #020617 100%); }
 .badge-nav{ background: rgba(var(--nav-900-rgb),0.06); color: var(--nav-900); }
