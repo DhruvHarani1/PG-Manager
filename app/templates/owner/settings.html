@@ -150,6 +150,9 @@
                     <button id="btn-property" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('property')">
                         Property Rules
                     </button>
+                    <button id="btn-notifications" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('notifications')">
+                        Notifications
+                    </button>
                     <button id="btn-data" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('data')">
                         Data Management
                     </button>
@@ -203,7 +206,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="darkModeToggle" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand1/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand1/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
                             </label>
                         </div>
                     </div>
@@ -345,6 +348,97 @@
 4. Turn off AC when leaving the room.
                         </textarea>
                         <p class="text-xs text-slate-400">This will be visible on the Tenant App dashboard.</p>
+                    </div>
+
+                </div>
+
+                <!-- Tab: Notifications -->
+                <div id="tab-notifications" class="tab-content space-y-6 hidden">
+                    <h2 class="text-lg font-bold text-slate-900 border-b border-gray-100 pb-4">Notification Preferences</h2>
+
+                    <!-- Notification Medium -->
+                    <div class="space-y-3">
+                         <h3 class="text-sm font-bold text-slate-800">Alert Channels</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                             <!-- Email -->
+                             <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand1 transition-colors group">
+                                 <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                 </div>
+                                 <div class="flex-1">
+                                     <span class="block text-sm font-bold text-slate-700">Email</span>
+                                     <span class="block text-xs text-slate-400">Daily summaries</span>
+                                 </div>
+                                 <input type="checkbox" checked class="w-5 h-5 text-brand1 rounded border-gray-300 focus:ring-brand1/20">
+                             </label>
+
+                             <!-- SMS -->
+                             <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand1 transition-colors group">
+                                 <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                 </div>
+                                 <div class="flex-1">
+                                     <span class="block text-sm font-bold text-slate-700">SMS</span>
+                                     <span class="block text-xs text-slate-400">Urgent alerts</span>
+                                 </div>
+                                 <input type="checkbox" checked class="w-5 h-5 text-brand1 rounded border-gray-300 focus:ring-brand1/20">
+                             </label>
+
+                             <!-- WhatsApp (Coming Soon) -->
+                             <label class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl cursor-not-allowed opacity-60">
+                                 <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.062.578 2.071.884 2.806.884 3.183 0 5.769-2.586 5.769-5.766 0-3.181-2.585-5.767-5.769-5.767zm0 10.66c-.958 0-1.785-.316-2.57-.751l-1.637.429.439-1.595c-.487-.828-.737-1.554-.737-2.977 0-2.618 2.129-4.747 4.748-4.747 2.619 0 4.749 2.129 4.749 4.747 0 2.618-2.13 4.747-4.749 4.747z"/></svg>
+                                 </div>
+                                 <div class="flex-1">
+                                     <span class="block text-sm font-bold text-slate-700">WhatsApp</span>
+                                     <span class="block text-xs text-slate-400">Coming Soon</span>
+                                 </div>
+                                 <input type="checkbox" disabled class="w-5 h-5 text-gray-300 rounded border-gray-300">
+                             </label>
+                         </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 my-2"></div>
+
+                    <!-- Alerts Configuration -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-slate-800">Alert Configuration</h3>
+                        
+                        <!-- Alert Item -->
+                        <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Rent Payment Received</h4>
+                                <p class="text-xs text-slate-500">Get notified immediately when a tenant pays rent.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
+                            </label>
+                        </div>
+
+                         <!-- Alert Item -->
+                        <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">New Complaint</h4>
+                                <p class="text-xs text-slate-500">When a tenant raises a new issue.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
+                            </label>
+                        </div>
+
+                         <!-- Alert Item -->
+                        <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Tenant Check-in/out</h4>
+                                <p class="text-xs text-slate-500">Track movements in your property.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
+                            </label>
+                        </div>
                     </div>
 
                 </div>
