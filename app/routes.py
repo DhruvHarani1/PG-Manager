@@ -1,5 +1,7 @@
+import os
 from psycopg2 import OperationalError
 import psycopg2
+from dotenv import load_dotenv
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for
 
 bp = Blueprint("main", __name__)
@@ -27,6 +29,7 @@ def signup():
         # name = request.form.get('name')
         # email = request.form.get('email')
         # password = request.form.get('password')
+       
         return redirect(url_for('main.index'))
     return render_template('signup.html')
 
@@ -51,34 +54,35 @@ def owner_tenant_details(tenant_id):
     return render_template('owner/tenant_details.html', tenant_id=tenant_id)
 
 DB_CONFIG = {
-    "dbname": "pgmanagement",
-    "user": "pguser",
-    "password": "pgpassword",
-    "host": "localhost",
-    "port": 5433
+    "dbname":os.getenv("DB_NAME"),
+            "user":os.getenv("DB_USER"),
+            "password":os.getenv("DB_PASSWORD"),
+            "host":os.getenv("DB_HOST"),
+            "port": int(os.getenv("DB_PORT", "5432")),
 }
 
 def get_db_connection():
     try:
         return psycopg2.connect(**DB_CONFIG)
-    except OperationalError:
-        return None
+    except OperationalError as e:
+         print("DB connection error:", e)
+         return None
 
 
 @bp.route("/admin", methods=["GET"])
 def get_users():
     conn = get_db_connection()
     if not conn:
-        return jsonify({"error": "DB connection failed"}), 500
+        return jsonify({"error": f"DB connection failed"}), 500
 
     cur = conn.cursor()
-    cur.execute("SELECT t_id, t_name, t_email FROM tenants;")
+    cur.execute("SELECT t_id, t_name, t_email , t_password FROM tenants;")
     rows = cur.fetchall()
     cur.close()
     conn.close()
 
     return jsonify([
-        {"id": r[0], "name": r[1], "email": r[2]}
+        {"id": r[0], "name": r[1], "email": r[2] , "password": r[3]}
         for r in rows
     ])
 

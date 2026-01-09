@@ -76,6 +76,10 @@ If you prefer separate terminals:
 '''
 pip install psycopg2
 '''
+# for Enviroment variable
+'''
+pip install python-dotenv
+'''
  
 
 
