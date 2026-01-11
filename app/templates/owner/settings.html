@@ -144,6 +144,15 @@
                     <button id="btn-preferences" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('preferences')">
                          Preferences
                     </button>
+                    <button id="btn-billing" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('billing')">
+                        Billing & Payments
+                    </button>
+                    <button id="btn-property" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('property')">
+                        Property Rules
+                    </button>
+                    <button id="btn-notifications" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('notifications')">
+                        Notifications
+                    </button>
                     <button id="btn-data" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('data')">
                         Data Management
                     </button>
@@ -197,10 +206,241 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="darkModeToggle" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand1/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand1/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
                             </label>
                         </div>
                     </div>
+                </div>
+
+                <!-- Tab: Billing -->
+                <div id="tab-billing" class="tab-content space-y-6 hidden">
+                    <h2 class="text-lg font-bold text-slate-900 border-b border-gray-100 pb-4">Billing & Payments</h2>
+                    
+                    <!-- Payment Methods -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-slate-800">Payment Collection</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-slate-700">UPI ID / VPA</label>
+                                <div class="relative">
+                                    <input type="text" placeholder="username@oksbi" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <p class="text-xs text-slate-400">Tenants can copy this to pay via any UPI app.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-slate-700">Payment QR Code</label>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 bg-gray-50">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                                    </div>
+                                    <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-gray-50 transition-colors">Upload QR Image</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 my-4"></div>
+
+                    <!-- Bank Details -->
+                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-slate-800">Bank Account Details</h3>
+                            <span class="text-xs font-medium text-slate-400 bg-white px-2 py-1 rounded border border-gray-200">For NEFT/IMPS</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-slate-500">Account Holder Name</label>
+                                <input type="text" placeholder="Ex: John Doe" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-brand1 focus:outline-none">
+                            </div>
+                             <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-slate-500">Bank Name</label>
+                                <input type="text" placeholder="Ex: HDFC Bank" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-brand1 focus:outline-none">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-slate-500">Account Number</label>
+                                <input type="text" placeholder="0000 0000 0000 0000" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-brand1 focus:outline-none font-mono">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-slate-500">IFSC Code</label>
+                                <input type="text" placeholder="HDFC0001234" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-brand1 focus:outline-none font-mono uppercase">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rent Defaults -->
+                     <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-slate-800">Rent Settings</h3>
+                         <div class="flex items-center gap-4">
+                             <div class="relative w-1/2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Late Fee (Daily)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-slate-400">₹</span>
+                                    <input type="number" value="100" class="w-full pl-7 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                </div>
+                             </div>
+                             <div class="relative w-1/2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Rent Due Grace Period</label>
+                                <div class="relative">
+                                    <input type="number" value="5" class="w-full pl-4 pr-12 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                    <span class="absolute right-3 top-2.5 text-slate-400 text-xs">Days</span>
+                                </div>
+                             </div>
+                         </div>
+                     </div>
+
+                </div>
+
+                <!-- Tab: Property Rules -->
+                <div id="tab-property" class="tab-content space-y-6 hidden">
+                    <h2 class="text-lg font-bold text-slate-900 border-b border-gray-100 pb-4">Property Rules & Info</h2>
+                    
+                    <!-- Wi-Fi Details -->
+                    <div class="bg-indigo-50 rounded-2xl p-6 border border-indigo-100 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" /></svg>
+                            </div>
+                            <h3 class="text-sm font-bold text-indigo-900">Wi-Fi Connection</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-indigo-800/60">Network Name (SSID)</label>
+                                <input type="text" value="PG_Manager_Guest" class="w-full px-3 py-2 bg-white/60 border border-indigo-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none text-indigo-900 font-medium">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-indigo-800/60">Password</label>
+                                <div class="relative">
+                                    <input type="text" value="Welcome@2024" class="w-full px-3 py-2 bg-white/60 border border-indigo-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none text-indigo-900 font-mono">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timings & Access -->
+                    <div class="space-y-4">
+                         <h3 class="text-sm font-bold text-slate-800">Timings & Access</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div class="space-y-2">
+                                <label class="block text-sm font-medium text-slate-700">Gate Closing Time</label>
+                                <input type="time" value="22:00" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                <p class="text-xs text-slate-400">Tenants must inform before entering after this time.</p>
+                             </div>
+                             <div class="space-y-2">
+                                <label class="block text-sm font-medium text-slate-700">Breakfast Timing</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="time" value="07:30" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                    <span class="text-slate-400 font-medium">-</span>
+                                    <input type="time" value="09:30" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                </div>
+                             </div>
+                         </div>
+                    </div>
+
+                    <!-- General Rules -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-slate-700">House Rules / Notice Board</label>
+                        <textarea rows="6" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1 leading-relaxed" placeholder="Write rules here...">
+1. No loud music after 10 PM.
+2. Keep the common area clean.
+3. Visitors allowed only in the reception area.
+4. Turn off AC when leaving the room.
+                        </textarea>
+                        <p class="text-xs text-slate-400">This will be visible on the Tenant App dashboard.</p>
+                    </div>
+
+                </div>
+
+                <!-- Tab: Notifications -->
+                <div id="tab-notifications" class="tab-content space-y-6 hidden">
+                    <h2 class="text-lg font-bold text-slate-900 border-b border-gray-100 pb-4">Notification Preferences</h2>
+
+                    <!-- Notification Medium -->
+                    <div class="space-y-3">
+                         <h3 class="text-sm font-bold text-slate-800">Alert Channels</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                             <!-- Email -->
+                             <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand1 transition-colors group">
+                                 <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                 </div>
+                                 <div class="flex-1">
+                                     <span class="block text-sm font-bold text-slate-700">Email</span>
+                                     <span class="block text-xs text-slate-400">Daily summaries</span>
+                                 </div>
+                                 <input type="checkbox" checked class="w-5 h-5 text-brand1 rounded border-gray-300 focus:ring-brand1/20">
+                             </label>
+
+                             <!-- SMS -->
+                             <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand1 transition-colors group">
+                                 <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                 </div>
+                                 <div class="flex-1">
+                                     <span class="block text-sm font-bold text-slate-700">SMS</span>
+                                     <span class="block text-xs text-slate-400">Urgent alerts</span>
+                                 </div>
+                                 <input type="checkbox" checked class="w-5 h-5 text-brand1 rounded border-gray-300 focus:ring-brand1/20">
+                             </label>
+
+                             <!-- WhatsApp (Coming Soon) -->
+                             <label class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl cursor-not-allowed opacity-60">
+                                 <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.062.578 2.071.884 2.806.884 3.183 0 5.769-2.586 5.769-5.766 0-3.181-2.585-5.767-5.769-5.767zm0 10.66c-.958 0-1.785-.316-2.57-.751l-1.637.429.439-1.595c-.487-.828-.737-1.554-.737-2.977 0-2.618 2.129-4.747 4.748-4.747 2.619 0 4.749 2.129 4.749 4.747 0 2.618-2.13 4.747-4.749 4.747z"/></svg>
+                                 </div>
+                                 <div class="flex-1">
+                                     <span class="block text-sm font-bold text-slate-700">WhatsApp</span>
+                                     <span class="block text-xs text-slate-400">Coming Soon</span>
+                                 </div>
+                                 <input type="checkbox" disabled class="w-5 h-5 text-gray-300 rounded border-gray-300">
+                             </label>
+                         </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 my-2"></div>
+
+                    <!-- Alerts Configuration -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-slate-800">Alert Configuration</h3>
+                        
+                        <!-- Alert Item -->
+                        <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Rent Payment Received</h4>
+                                <p class="text-xs text-slate-500">Get notified immediately when a tenant pays rent.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
+                            </label>
+                        </div>
+
+                         <!-- Alert Item -->
+                        <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">New Complaint</h4>
+                                <p class="text-xs text-slate-500">When a tenant raises a new issue.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
+                            </label>
+                        </div>
+
+                         <!-- Alert Item -->
+                        <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Tenant Check-in/out</h4>
+                                <p class="text-xs text-slate-500">Track movements in your property.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand1"></div>
+                            </label>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Tab: Data -->

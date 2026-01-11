@@ -32,6 +32,10 @@ html.dark #sidebar {
     border-color: rgba(255, 255, 255, 0.05);
 }
 
+html.dark tr.group:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
 html.dark .sidebar-link:hover:not(.active) {
     background: rgba(255, 255, 255, 0.05);
     color: #f1f5f9;
@@ -51,10 +55,20 @@ html.dark .text-gray-400 { color: #cbd5e1; } /* gray-400 mapping */
 html.dark .text-slate-400 { color: #cbd5e1; } /* slate-400 mapping */
 html.dark .bg-white { background-color: #1e293b; /* slate-800 */ }
 html.dark .bg-gray-50 { background-color: #0f172a; /* slate-900 */ }
+html.dark .bg-gray-200 { background-color: rgba(255, 255, 255, 0.1); } /* Dark mode toggle track */
 html.dark .border-gray-200, html.dark .border-gray-100, html.dark .border-white\/60 { border-color: rgba(255,255,255,0.1); }
 html.dark .bg-white\/60 { background-color: rgba(30, 41, 59, 0.6); }
 html.dark .bg-white\/40 { background-color: rgba(30, 41, 59, 0.4); }
 html.dark .border-white\/50 { border-color: rgba(255, 255, 255, 0.1); }
+
+/* Indigo Theme Dark Mode Overrides (Wi-Fi Section) */
+html.dark .bg-indigo-50 { background-color: rgba(49, 46, 129, 0.2); /* indigo-900/20 */ }
+html.dark .bg-indigo-100 { background-color: rgba(49, 46, 129, 0.5); /* indigo-900/50 */ }
+html.dark .text-indigo-900 { color: #e0e7ff; /* indigo-100 */ }
+html.dark .text-indigo-800\/60 { color: #a5b4fc; /* indigo-300 */ }
+html.dark .text-indigo-600 { color: #818cf8; /* indigo-400 */ }
+html.dark .border-indigo-100, html.dark .border-indigo-200 { border-color: rgba(99, 102, 241, 0.2); }
+
 
 
 html.dark .bg-gray-50\/50 { background-color: rgba(15, 23, 42, 0.5); }
