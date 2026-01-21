@@ -179,11 +179,42 @@ def owner_dashboard():
         
         net_profit = total_income - total_spent
         
+        # Calculate Occupancy
+        # 1. Total Capacity (Sum of all beds in all rooms of this owner)
+        cur.execute("""
+            SELECT SUM(capacity) 
+            FROM rooms 
+            WHERE property_id IN (SELECT id FROM properties WHERE owner_id = %s)
+        """, (owner_id,))
+        capacity_row = cur.fetchone()
+        total_capacity = capacity_row[0] or 0
+        
+        # 2. Total Tenants (Occupied Beds)
+        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s", (owner_id,))
+        total_tenants = cur.fetchone()[0] or 0
+        
+        # 3. Calculate Stats
+        if total_capacity > 0:
+            occupancy_rate = int((total_tenants / total_capacity) * 100)
+        else:
+            occupancy_rate = 0
+            
+        available_beds = max(0, total_capacity - total_tenants)
+        occupancy_rotation = int((occupancy_rate / 100) * 360)
+        occupancy_rotation_style = f"transform: rotate({occupancy_rotation}deg);"
+        
+        # Use previous month dummy data for "vs last month" comparison for now
+        
         return render_template('owner/dashboard.html', 
                              name=session.get('name', 'Owner'),
                              total_income=total_income,
                              total_spent=total_spent,
-                             net_profit=net_profit)
+                             net_profit=net_profit,
+                             occupancy_rate=occupancy_rate,
+                             occupancy_rotation=occupancy_rotation,
+                             occupancy_rotation_style=occupancy_rotation_style,
+                             available_beds=available_beds,
+                             total_occupied=total_tenants)
                              
     except Exception as e:
         print(f"Error dashboard stats: {e}")
@@ -340,3 +371,116 @@ def export_tenants():
 def owner_tenant_details(tenant_id):
     if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     return render_template('owner/tenant_details.html', tenant_id=tenant_id)
+
+@bp.route('/owner/properties')
+def owner_properties():
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    conn = get_db_connection()
+    if not conn:
+        flash("Database Error", "error")
+        return render_template('owner/properties.html', properties=[])
+        
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id FROM owners WHERE user_id = %s", (session.get('user_id'),))
+        owner_id = cur.fetchone()[0]
+        
+        # 1. Fetch Properties
+        cur.execute("SELECT id, name, address FROM properties WHERE owner_id = %s", (owner_id,))
+        prop_rows = cur.fetchall()
+        
+        properties = []
+        for prop_row in prop_rows:
+            prop_id = prop_row[0]
+            
+            # 2. Fetch Rooms for this property
+            cur.execute("""
+                SELECT id, room_number, floor_number, capacity, rent_amount 
+                FROM rooms WHERE property_id = %s ORDER BY room_number
+            """, (prop_id,))
+            room_rows = cur.fetchall()
+            
+            rooms = []
+            for room in room_rows:
+                r_id = room[0]
+                # Count current tenants in this room
+                cur.execute("SELECT COUNT(*) FROM tenants WHERE room_id = %s", (r_id,))
+                occupancy = cur.fetchone()[0]
+                
+                capacity = room[3]
+                occupancy_pct = int((occupancy / capacity) * 100) if capacity > 0 else 0
+                
+                rooms.append({
+                    'id': r_id,
+                    'room_number': room[1],
+                    'floor': room[2],
+                    'capacity': capacity,
+                    'rent': room[4],
+                    'occupancy': occupancy,
+                    'occupancy_pct': occupancy_pct,
+                    'occupancy_style': f"width: {occupancy_pct}%"
+                })
+                
+            properties.append({
+                'id': prop_id,
+                'name': prop_row[1],
+                'address': prop_row[2],
+                'rooms': rooms
+            })
+            
+        return render_template('owner/properties.html', properties=properties)
+
+    except Exception as e:
+        print(f"Error fetching properties: {e}")
+        flash("System Error", "error")
+        return render_template('owner/properties.html', properties=[])
+    finally:
+        cur.close()
+        conn.close()
+
+@bp.route('/owner/properties/add-room', methods=['POST'])
+def add_room():
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    room_number = request.form.get('room_number')
+    floor = request.form.get('floor')
+    capacity = request.form.get('capacity')
+    rent = request.form.get('rent_amount')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id FROM owners WHERE user_id = %s", (session.get('user_id'),))
+        owner_id = cur.fetchone()[0]
+        
+        # Get default property (assume single property for now)
+        cur.execute("SELECT id FROM properties WHERE owner_id = %s", (owner_id,))
+        prop_row = cur.fetchone()
+        if not prop_row:
+             # Create one if missing safety net
+             cur.execute("INSERT INTO properties (owner_id) VALUES (%s) RETURNING id", (owner_id,))
+             property_id = cur.fetchone()[0]
+        else:
+             property_id = prop_row[0]
+
+        cur.execute("""
+            INSERT INTO rooms (property_id, room_number, floor_number, capacity, rent_amount)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (property_id, room_number, floor, capacity, rent))
+        
+        conn.commit()
+        flash("Room added successfully!", "success")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Error adding room: {e}")
+        if "unique constraint" in str(e).lower():
+            flash("Room number already exists!", "error")
+        else:
+            flash("Failed to add room", "error")
+    finally:
+        cur.close()
+        conn.close()
+        
+    return redirect(url_for('main.owner_properties'))
