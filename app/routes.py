@@ -429,6 +429,13 @@ def owner_tenants():
         elif filter_type == 'past':
             query += " AND onboarding_status IN ('EXITED', 'LEFT', 'MOVED_OUT', 'REJECTED')"
         
+        # Apply Search
+        search_query = request.args.get('search')
+        if search_query:
+            query += " AND (full_name ILIKE %s OR email ILIKE %s OR room_number ILIKE %s)"
+            search_term = f"%{search_query}%"
+            params.extend([search_term, search_term, search_term])
+        
         query += " ORDER BY created_at DESC"
         
         cur.execute(query, tuple(params))
@@ -448,6 +455,10 @@ def owner_tenants():
                 'joined': row[7].strftime('%d %b %Y') if row[7] else 'N/A'
             })
             
+        # Check for AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+             return render_template('owner/partials/tenant_rows.html', tenants=tenants)
+
         # Stats
         total_tenants = len(tenants)
         active_tenants = sum(1 for t in tenants if t['status'] == 'ACTIVE')
