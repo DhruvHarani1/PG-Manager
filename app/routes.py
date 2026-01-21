@@ -154,6 +154,24 @@ def logout():
 
 # --- Owner Routes ---
 
+@bp.app_template_filter('time_ago')
+def time_ago(date):
+    if not date: return ''
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc) if date.tzinfo else datetime.now()
+    
+    diff = now - date
+    seconds = diff.total_seconds()
+    
+    if seconds < 60:
+        return 'Just now'
+    elif seconds < 3600:
+        return f'{int(seconds // 60)} mins ago'
+    elif seconds < 86400:
+        return f'{int(seconds // 3600)} hours ago'
+    else:
+        return f'{int(seconds // 86400)} days ago'
+
 @bp.route('/owner/dashboard')
 def owner_dashboard():
     if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
@@ -289,6 +307,46 @@ def owner_dashboard():
             WHERE owner_id = %s AND status = 'PENDING' AND priority = 'HIGH'
         """, (owner_id,))
         high_priority_count = cur.fetchone()[0] or 0
+
+        # 8. Recent Activity Feed (Aggregated)
+        cur.execute("""
+            SELECT type, title, description, created_at, metadata FROM (
+                -- Payments
+                SELECT 'PAYMENT' as type, 
+                       'Rent Received' as title, 
+                       'From ' || t.full_name || ' (₹' || p.amount || ')' as description, 
+                       p.created_at,
+                       'green' as metadata
+                FROM payments p 
+                JOIN tenants t ON p.tenant_id = t.id 
+                WHERE t.owner_id = %s
+                
+                UNION ALL
+                
+                -- New Tenants
+                SELECT 'MOVEMENT' as type, 
+                       'New Tenant' as title, 
+                       full_name || ' joined Room ' || room_number as description, 
+                       created_at,
+                       'blue' as metadata
+                FROM tenants 
+                WHERE owner_id = %s
+                
+                UNION ALL
+                
+                -- Complaints
+                SELECT 'COMPLAINT' as type, 
+                       'New Complaint' as title, 
+                       title || ' in Room ' || (SELECT room_number FROM tenants WHERE id = complaints.tenant_id) as description, 
+                       created_at,
+                       'red' as metadata
+                FROM complaints 
+                WHERE owner_id = %s
+            ) as activity
+            ORDER BY created_at DESC
+            LIMIT 5
+        """, (owner_id, owner_id, owner_id))
+        recent_activity = cur.fetchall()
         
         return render_template('owner/dashboard.html', 
                              name=session.get('name', 'Owner'),
@@ -308,7 +366,8 @@ def owner_dashboard():
                              expiring_leases=expiring_leases,
                              recent_movements=recent_movements,
                              pending_complaints=pending_complaints,
-                             high_priority_count=high_priority_count)
+                             high_priority_count=high_priority_count,
+                             recent_activity=recent_activity)
                              
     except Exception as e:
         print(f"Error dashboard stats: {e}")
