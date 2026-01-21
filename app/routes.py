@@ -438,6 +438,20 @@ def owner_tenants():
         
         query += " ORDER BY created_at DESC"
         
+        # --- PAGINATION ---
+        page = request.args.get('page', 1, type=int)
+        per_page = 3
+        offset = (page - 1) * per_page
+        
+        # Count Total Matches (for this filter/search)
+        count_query = f"SELECT COUNT(*) FROM ({query}) AS sub"
+        cur.execute(count_query, tuple(params))
+        total_count = cur.fetchone()[0]
+        
+        # Add LIMIT/OFFSET
+        query += " LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
+        
         cur.execute(query, tuple(params))
         
         # Convert to list of dicts for template
@@ -455,20 +469,37 @@ def owner_tenants():
                 'joined': row[7].strftime('%d %b %Y') if row[7] else 'N/A'
             })
             
+        import math
+        total_pages = math.ceil(total_count / per_page)
+        
+        pagination = {
+            'current_page': page,
+            'total_pages': total_pages,
+            'has_next': page < total_pages,
+            'has_prev': page > 1,
+            'total_count': total_count,
+            'per_page': per_page
+        }
+
         # Check for AJAX request
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-             return render_template('owner/partials/tenant_rows.html', tenants=tenants)
+             return render_template('owner/partials/tenant_list_with_pagination.html', tenants=tenants, pagination=pagination)
 
-        # Stats
-        total_tenants = len(tenants)
-        active_tenants = sum(1 for t in tenants if t['status'] == 'ACTIVE')
-        notice_tenants = sum(1 for t in tenants if t['status'] == 'NOTICE')
+        # Stats (Need separate query independent of pagination/filtering?)
+        # For now, stats are global or per filter? Let's keep stats global for the top cards.
+        # But wait, original code did stats calculation on `tenants` list. Now `tenants` is paginated.
+        # We need to fetch global stats separately to keep the top cards accurate.
         
-        # Calculate Rent Due (Simple logic: Active tenants who haven't paid this month)
-        # For now, we'll approximate this by checking against the 'payments' table or just using a placeholder logic if payments aren't fully linked yet.
-        # Ideally: Check if payment exists for current month.
-        # Since we don't have a robust 'bill generation' system yet, let's query who has paid this month.
+        # Global Tenant Count
+        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s", (owner_id,))
+        global_total = cur.fetchone()[0]
         
+        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s AND onboarding_status = 'ACTIVE'", (owner_id,))
+        global_active = cur.fetchone()[0]
+        
+        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s AND onboarding_status = 'NOTICE'", (owner_id,))
+        global_notice = cur.fetchone()[0]
+
         import datetime
         current_month = datetime.datetime.now().strftime('%Y-%m')
         cur.execute("""
@@ -477,17 +508,16 @@ def owner_tenants():
         """, (current_month,))
         paid_count = cur.fetchone()[0]
         
-        # Approximate due: Active tenants - Paid tenants
-        # This is a bit rough but works for now.
-        rent_due_count = max(0, active_tenants - paid_count)
+        global_rent_due = max(0, global_active - paid_count)
 
         return render_template('owner/tenants.html', 
                              tenants=tenants,
+                             pagination=pagination,
                              stats={
-                                 'total': total_tenants,
-                                 'active': active_tenants,
-                                 'rent_due': rent_due_count,
-                                 'notice': notice_tenants
+                                 'total': global_total,
+                                 'active': global_active,
+                                 'rent_due': global_rent_due,
+                                 'notice': global_notice
                              })
         
     except Exception as e:

@@ -94,41 +94,19 @@
         </form>
     </div>
 
-    <!-- Tenants Table -->
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-slate-400">
-                        <th class="px-6 py-4 font-bold">Tenant Name</th>
-                        <th class="px-6 py-4 font-bold">Details</th>
-                        <th class="px-6 py-4 font-bold">Contact</th> <!-- Added Phone -->
-                        <th class="px-6 py-4 font-bold">Move In</th>
-                        <th class="px-6 py-4 font-bold">Rent Status</th>
-                        <th class="px-6 py-4 font-bold">Status</th> <!-- Added Status -->
-                        <th class="px-6 py-4 font-bold text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50" id="tenant-list">
-                    {% include "owner/partials/tenant_rows.html" %}
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center text-sm">
-            <span class="text-slate-500">Showing 1 to 3 of 45 tenants</span>
-            <div class="flex gap-2">
-                <button class="px-3 py-1 rounded-lg border border-gray-200 text-slate-500 hover:bg-gray-50">Previous</button>
-                <button class="px-3 py-1 rounded-lg border border-gray-200 text-slate-500 hover:bg-gray-50">Next</button>
-            </div>
-        </div>
+    <!-- Tenants Table & Pagination -->
+    <div id="tenants-container">
+        {% include "owner/partials/tenant_list_with_pagination.html" %}
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.querySelector('input[name="search"]');
-            const tenantList = document.getElementById('tenant-list');
+            
+            // Use event delegation for pagination clicks if we wanted AJAX pagination (optional for now)
+            // But strict requirement was just next/prev buttons.
+            // The search script needs to update the CONTAINER now.
+
             let timeout = null;
 
             if (searchInput) {
@@ -137,30 +115,28 @@
                     const query = e.target.value;
                     const url = new URL(window.location.href);
                     
-                    // Update URL without reloading (optional, keeps state)
                     if (query) {
                         url.searchParams.set('search', query);
+                        url.searchParams.set('page', 1); // Reset to page 1 on search
                     } else {
                         url.searchParams.delete('search');
                     }
                     window.history.replaceState({}, '', url);
 
-                    // Debounce search
                     timeout = setTimeout(() => {
                         fetch(url, {
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
                         })
                         .then(response => response.text())
                         .then(html => {
-                            tenantList.innerHTML = html;
+                            document.getElementById('tenants-container').innerHTML = html;
                         })
                         .catch(err => console.error('Search failed:', err));
-                    }, 300); // 300ms delay
+                    }, 300);
                 });
             }
         });
     </script>
+</div>
 </div>
 {% endblock %}
