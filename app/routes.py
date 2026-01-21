@@ -637,3 +637,51 @@ def add_room():
         conn.close()
         
     return redirect(url_for('main.owner_properties'))
+
+
+@bp.route('/owner/properties/edit-room', methods=['POST'])
+def edit_room():
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    room_id = request.form.get('room_id')
+    room_number = request.form.get('room_number')
+    floor = request.form.get('floor')
+    capacity = request.form.get('capacity')
+    rent = request.form.get('rent_amount')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Verify ownership via property
+        cur.execute("""
+            SELECT r.id FROM rooms r
+            JOIN properties p ON r.property_id = p.id
+            JOIN owners o ON p.owner_id = o.id
+            WHERE r.id = %s AND o.user_id = %s
+        """, (room_id, session.get('user_id')))
+        
+        if not cur.fetchone():
+            flash("Unauthorized or Room not found", "error")
+            return redirect(url_for('main.owner_properties'))
+
+        cur.execute("""
+            UPDATE rooms 
+            SET room_number = %s, floor_number = %s, capacity = %s, rent_amount = %s
+            WHERE id = %s
+        """, (room_number, floor, capacity, rent, room_id))
+        
+        conn.commit()
+        flash("Room details updated successfully!", "success")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Error editing room: {e}")
+        if "unique constraint" in str(e).lower():
+            flash("Room number already exists!", "error")
+        else:
+            flash("Failed to update room", "error")
+    finally:
+        cur.close()
+        conn.close()
+        
+    return redirect(url_for('main.owner_properties'))
