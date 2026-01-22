@@ -14,9 +14,8 @@ def index():
     if 'user_id' in session:
         if session.get('role') == 'OWNER':
             return redirect(url_for('main.owner_dashboard'))
-        else:
-             # Placeholder for Tenant Dashboard
-            return render_template("index.html") # Temp
+        elif session.get('role') == 'TENANT':
+             return redirect(url_for('main.tenant_dashboard'))
             
     return render_template("index.html")
 
@@ -57,8 +56,7 @@ def login():
                     if owner: session['name'] = owner[0]
                     return redirect(url_for('main.owner_dashboard'))
             elif user[2] == 'TENANT':
-                    # Placeholder logic
-                    return redirect(url_for('main.index')) 
+                    return redirect(url_for('main.tenant_dashboard')) 
                 
         except Exception as e:
             print(e)
@@ -141,7 +139,7 @@ def signup():
                 session['user_id'] = user_id
                 session['role'] = 'TENANT'
                 session['name'] = name
-                return redirect(url_for('main.index'))
+                return redirect(url_for('main.tenant_dashboard'))
 
         except Exception as e:
             conn.rollback()
@@ -1413,3 +1411,72 @@ def resolve_complaint(complaint_id):
         conn.close()
         
     return redirect(url_for('main.owner_complaints', status='PENDING'))
+
+
+@bp.route('/tenant/dashboard')
+def tenant_dashboard():
+    if session.get('role') != 'TENANT': return redirect(url_for('main.login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Fetch Tenant Details
+        cur.execute("""
+            SELECT t.id, t.full_name, t.room_number, t.bed_number, t.phone_number, t.email, t.monthly_rent, t.onboarding_status
+            FROM tenants t
+            WHERE t.user_id = %s
+        """, (session.get('user_id'),))
+        tenant = cur.fetchone()
+        
+        if not tenant:
+            flash("Tenant record not found.", "error")
+            return redirect(url_for('main.login'))
+
+        # Check Rent Status for Current Month
+        from datetime import datetime
+        current_month = datetime.now().strftime('%Y-%m')
+        
+        cur.execute("""
+            SELECT id FROM payments 
+            WHERE tenant_id = %s AND payment_month = %s AND status = 'COMPLETED'
+        """, (tenant[0], current_month))
+        
+        is_paid = cur.fetchone() is not None
+        rent_status = 'PAID' if is_paid else 'PENDING'
+            
+        tenant_data = {
+            'id': tenant[0],
+            'full_name': tenant[1],
+            'room_number': tenant[2],
+            'bed_number': tenant[3],
+            'phone': tenant[4],
+            'email': tenant[5],
+            'rent': tenant[6],
+            'status': tenant[7],
+            'rent_status': rent_status
+        }
+        
+        return render_template('tenant/dashboard.html', tenant=tenant_data)
+    except Exception as e:
+        print(f"Error fetching tenant dashboard: {e}")
+        return "Error Loading Dashboard", 500
+    finally:
+        cur.close()
+        conn.close()
+
+@bp.route('/tenant/qr/<tenant_id>')
+def tenant_qr_code(tenant_id):
+    import qrcode
+    from io import BytesIO
+    from flask import send_file
+    
+    # Generate QR Code content (e.g., JSON with ID and Name for easy scanning)
+    # In a real app, this might be a signed token.
+    qr_content = f"TENANT:{tenant_id}"
+    
+    img = qrcode.make(qr_content)
+    buf = BytesIO()
+    img.save(buf)
+    buf.seek(0)
+    
+    return send_file(buf, mimetype='image/png')
