@@ -931,8 +931,8 @@ def export_tenants():
         # Fetch Tenant Data (Real)
         cur.execute("""
             SELECT full_name, email, phone_number, room_number, 
-                   monthly_rent, deposit_paid, onboarding_status, 
-                   lease_start_date, lease_end_date
+                   monthly_rent, security_deposit, onboarding_status, 
+                   lease_start, lease_end
             FROM tenants
             WHERE owner_id = %s
             ORDER BY room_number
@@ -949,7 +949,12 @@ def export_tenants():
         
         # Data
         for row in rows:
-            writer.writerow(row)
+            # Convert row to list to modify
+            row_list = list(row)
+            # Prepend ' to phone number (index 2) to force Excel string format
+            if row_list[2]:
+                row_list[2] = f"'{row_list[2]}" 
+            writer.writerow(row_list)
             
         return Response(
             output.getvalue(),
@@ -959,7 +964,7 @@ def export_tenants():
         
     except Exception as e:
         print(f"Error exporting tenants: {e}")
-        return redirect(url_for('main.owner_settings'))
+        return f"Export Error: {str(e)}", 500
     finally:
         cur.close()
         conn.close()
