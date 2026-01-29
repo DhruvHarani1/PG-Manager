@@ -11,6 +11,10 @@ def index():
             
     return render_template("index.html")
 
+@bp.route('/about')
+def about():
+    return render_template('about.html')
+
 @bp.app_template_filter('time_ago')
 def time_ago(date):
     if not date: return ''
