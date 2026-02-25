@@ -45,7 +45,7 @@ def force_reset_user():
         cur.execute("SELECT email, password_hash FROM users WHERE email = %s", (email,))
         row = cur.fetchone()
         if row:
-            print(f"🔍 Verification: User found: {row[0]}")
+            print(f"🔍 Verification: User found: {row[0]}") 
         else:
             print("❌ Verification FAILED: User not found after commit!")
 
